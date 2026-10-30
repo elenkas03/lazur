@@ -1,0 +1,641 @@
+<!doctype html>
+<html lang="bg">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+<title>Лазур приложение – прототип</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700;800&family=Onest:wght@400;500;600;700&display=swap">
+<style>
+/* Layout: presentation page — phone mockup of the customer app on the left, staff admin panel on the right; stacks on narrow screens.
+   Palette follows Lazur's 2026 identity: deep green, lime, sky blue. */
+:root {
+  --bg: #eef3ef;
+  --surface: #ffffff;
+  --surface-2: #f3f6f2;
+  --line: #d9e2dc;
+  --fg: #10291f;
+  --muted: #587064;
+  --green: #0b5a45;
+  --green-2: #2f9e5a;
+  --green-soft: #e2efe6;
+  --lime: #cdee5c;
+  --lime-ink: #0b3d2f;
+  --sky: #a8d3f2;
+  --sale: #d23a3a;
+  --ok: #1f8a4c;
+  --phone-bezel: #0c1a14;
+  --display: "Unbounded", "Arial Black", system-ui, sans-serif;
+  --body: "Onest", "Segoe UI", system-ui, sans-serif;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #08130e; --surface: #102019; --surface-2: #162a21; --line: #24402f;
+    --fg: #e4f0e8; --muted: #92ad9d; --green: #0f6a51; --green-2: #45c47b; --green-soft: #173528;
+    --lime: #cdee5c; --lime-ink: #0b3d2f; --sky: #a8d3f2; --sale: #ff6b6b; --ok: #45c47b;
+    --phone-bezel: #000000; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #08130e; --surface: #102019; --surface-2: #162a21; --line: #24402f;
+  --fg: #e4f0e8; --muted: #92ad9d; --green: #0f6a51; --green-2: #45c47b; --green-soft: #173528;
+  --lime: #cdee5c; --lime-ink: #0b3d2f; --sky: #a8d3f2; --sale: #ff6b6b; --ok: #45c47b;
+  --phone-bezel: #000000; color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body {
+  background: var(--bg); color: var(--fg); font-family: var(--body); font-size: 15px; line-height: 1.45;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 28px 48px;
+}
+button, input, select { font: inherit; color: inherit; }
+button { cursor: pointer; }
+:focus-visible { outline: 2px solid var(--green-2); outline-offset: 2px; }
+.wrap { max-width: 1140px; margin: 0 auto; display: grid; gap: 28px; }
+.intro { display: grid; gap: 6px; max-width: 72ch; }
+.tag { display: inline-block; font-size: 12px; letter-spacing: .08em; text-transform: uppercase; font-weight: 600; color: var(--green-2); }
+h1 { font-family: var(--display); font-weight: 700; font-size: clamp(24px, 4vw, 34px); line-height: 1.15; margin: 0; text-wrap: balance; }
+.intro p { margin: 0; color: var(--muted); }
+.stage { display: grid; grid-template-columns: 400px minmax(0, 1fr); gap: 32px; align-items: start; }
+
+/* ---------- Phone ---------- */
+.phone { width: 390px; height: 810px; max-width: 100%; border-radius: 48px; padding: 12px; background: var(--phone-bezel); box-shadow: 0 30px 60px -30px rgba(5,40,25,.5); position: sticky; top: 20px; }
+.screen { position: relative; width: 100%; height: 100%; border-radius: 37px; overflow: hidden; background: var(--surface-2); display: flex; flex-direction: column; }
+.status { display: flex; justify-content: space-between; padding: 12px 26px 4px; font-size: 13px; font-weight: 600; background: var(--green); color: #fff; }
+.appbar { background: var(--green); color: #fff; padding: 6px 18px 16px; display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.brand { display: flex; align-items: center; gap: 10px; }
+.mark { width: 38px; height: 38px; border-radius: 50%; background: #fff; display: grid; place-items: center; flex: none; }
+.mark svg { width: 24px; height: 24px; }
+.wordmark { font-family: var(--display); font-weight: 800; font-size: 20px; letter-spacing: .06em; line-height: 1.05; }
+.wordmark small { display: block; font-family: var(--body); font-weight: 500; font-size: 12px; letter-spacing: 0; color: var(--lime); }
+.bell { position: relative; width: 38px; height: 38px; border-radius: 50%; border: 0; background: rgba(255,255,255,.14); display: grid; place-items: center; color: #fff; }
+.bell .dot { position: absolute; top: 7px; right: 8px; width: 9px; height: 9px; border-radius: 50%; background: var(--lime); border: 2px solid var(--green); }
+.view { flex: 1; overflow-y: auto; padding: 16px 16px 24px; display: grid; align-content: start; gap: 14px; }
+
+.seg { display: grid; grid-template-columns: 1fr 1fr; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 4px; gap: 4px; }
+.seg button { border: 0; background: transparent; border-radius: 9px; padding: 8px 6px; font-weight: 600; font-size: 13.5px; color: var(--muted); }
+.seg button[aria-pressed="true"] { background: var(--green); color: #fff; }
+.banner { border-radius: 16px; padding: 14px 16px; background: var(--green); color: var(--lime); font-family: var(--display); font-weight: 500; font-size: 15px; line-height: 1.25; }
+.banner b { font-weight: 800; display: block; }
+.banner small { display: block; margin-top: 6px; font-family: var(--body); font-size: 11.5px; color: #d9eadf; line-height: 1.35; }
+.banner.promo { background: var(--lime); color: var(--lime-ink); }
+.banner.promo small { color: var(--lime-ink); opacity: .8; }
+.period { display: flex; justify-content: space-between; align-items: baseline; font-size: 13px; color: var(--muted); }
+.period b { color: var(--fg); font-size: 14px; }
+.chips { display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none; margin: 0 -16px; padding: 0 16px; }
+.chips button { flex: none; border: 1px solid var(--line); background: var(--surface); border-radius: 999px; padding: 6px 12px; font-size: 13px; font-weight: 500; }
+.chips button[aria-pressed="true"] { background: var(--fg); color: var(--surface); border-color: var(--fg); }
+.grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.promo-card { position: relative; text-align: left; border: 1px solid var(--line); background: var(--surface); border-radius: 16px; padding: 8px; display: grid; gap: 5px; align-content: start; }
+.pic { aspect-ratio: 1; width: 100%; max-width: 100%; border-radius: 11px; overflow: hidden; background: var(--green-soft); display: block; }
+.pic img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.pic.ph { display: grid; place-items: center; padding: 10px; text-align: center; font-family: var(--display); font-weight: 700; font-size: 15px; color: var(--green); background: var(--lime); }
+.off { position: absolute; top: 14px; right: 14px; background: var(--sale); color: #fff; font-family: var(--display); font-weight: 700; font-size: 12px; padding: 3px 7px; border-radius: 8px; }
+.pname { font-weight: 600; font-size: 13px; line-height: 1.25; padding: 0 2px; }
+.pname span { display: block; font-weight: 400; color: var(--muted); font-size: 12px; }
+.prices { display: flex; align-items: baseline; gap: 6px; flex-wrap: wrap; padding: 0 2px; }
+.price { font-family: var(--display); font-weight: 800; font-size: 15px; font-variant-numeric: tabular-nums; color: var(--fg); }
+.lv { font-size: 12px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.old { text-decoration: line-through; color: var(--muted); font-size: 12px; font-variant-numeric: tabular-nums; }
+.since { justify-self: start; margin: 0 2px; font-size: 10.5px; font-weight: 600; background: var(--green); color: var(--lime); padding: 2px 7px; border-radius: 6px; }
+.since.p { background: var(--sale); color: #fff; }
+.empty { text-align: center; color: var(--muted); padding: 24px 10px; }
+
+/* Card */
+.loyalty { border-radius: 20px; padding: 18px; color: #fff; background: radial-gradient(circle at 92% 0%, var(--lime) 0 70px, transparent 71px), linear-gradient(150deg, var(--green-2), var(--green) 60%); display: grid; gap: 14px; }
+.loyalty .row { display: flex; justify-content: space-between; align-items: center; }
+.loyalty .wordmark { font-size: 17px; }
+.lvl { font-size: 11.5px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; background: var(--green); color: var(--lime); padding: 4px 10px; border-radius: 999px; }
+.barcode { background: #fff; border-radius: 14px; padding: 14px 14px 8px; display: grid; justify-items: center; gap: 4px; }
+.barcode svg { width: 100%; height: 86px; }
+.barcode .num { color: #111; font-family: ui-monospace, Consolas, monospace; letter-spacing: .25em; font-size: 14px; font-variant-numeric: tabular-nums; }
+.hint { font-size: 13px; opacity: .92; text-align: center; }
+.stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.stat { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 10px; display: grid; gap: 2px; align-content: start; }
+.stat b { font-family: var(--display); font-size: 16px; font-variant-numeric: tabular-nums; }
+.stat span { font-size: 11.5px; color: var(--muted); }
+.panel { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 14px; display: grid; gap: 10px; }
+.panel h3 { margin: 0; font-size: 15px; }
+.bar { height: 8px; border-radius: 99px; background: var(--green-soft); overflow: hidden; }
+.bar i { display: block; height: 100%; background: var(--green-2); border-radius: 99px; }
+.small { font-size: 12.5px; color: var(--muted); margin: 0; }
+
+/* Stores / list */
+.store { display: grid; grid-template-columns: 1fr auto; gap: 3px 10px; }
+.store + .store { border-top: 1px solid var(--line); padding-top: 10px; }
+.store b { font-size: 14.5px; }
+.pill { font-size: 12px; font-weight: 600; padding: 3px 9px; border-radius: 99px; align-self: start; white-space: nowrap; }
+.pill.open { background: color-mix(in srgb, var(--ok) 16%, transparent); color: var(--ok); }
+.pill.closed { background: color-mix(in srgb, var(--sale) 14%, transparent); color: var(--sale); }
+.pill.unk { background: var(--surface-2); color: var(--muted); }
+.store span { font-size: 13px; color: var(--muted); grid-column: 1 / -1; }
+.store em { font-style: normal; font-size: 12px; color: var(--green-2); font-weight: 600; grid-column: 1 / -1; }
+.li { display: grid; grid-template-columns: 40px 1fr auto auto; gap: 10px; align-items: center; }
+.li + .li { border-top: 1px solid var(--line); padding-top: 10px; }
+.li .thumb { width: 40px; height: 40px; border-radius: 8px; overflow: hidden; background: var(--green-soft); }
+.li .thumb img { width: 100%; height: 100%; object-fit: cover; }
+.li .t { font-size: 14px; font-weight: 500; min-width: 0; }
+.li .t small { display: block; color: var(--muted); font-weight: 400; }
+.x { border: 0; background: var(--surface-2); width: 30px; height: 30px; border-radius: 50%; color: var(--muted); }
+.total { display: flex; justify-content: space-between; font-weight: 600; gap: 8px; flex-wrap: wrap; }
+.total .save { color: var(--ok); }
+.toggle { display: flex; justify-content: space-between; align-items: center; gap: 10px; font-size: 14px; }
+.toggle input { width: 42px; height: 24px; accent-color: var(--green-2); }
+
+/* Tabbar */
+.tabbar { position: relative; z-index: 3; display: grid; grid-template-columns: repeat(5, 1fr); background: var(--surface); border-top: 1px solid var(--line); padding: 8px 6px 22px; }
+.tabbar button { border: 0; background: none; display: grid; justify-items: center; gap: 3px; font-size: 11px; font-weight: 500; color: var(--muted); padding: 4px 0; }
+.tabbar svg { width: 23px; height: 23px; }
+.tabbar button[aria-selected="true"] { color: var(--green-2); }
+.tabbar .card-tab span.ic { width: 46px; height: 46px; margin-top: -24px; border-radius: 50%; background: var(--lime); color: var(--lime-ink); display: grid; place-items: center; border: 4px solid var(--surface); }
+
+/* Sheet + push */
+.sheet-bg { position: absolute; inset: 0; background: rgba(4,20,13,.5); display: flex; align-items: flex-end; z-index: 5; }
+.sheet { width: 100%; max-height: 92%; overflow-y: auto; background: var(--surface); border-radius: 24px 24px 0 0; padding: 16px 18px 28px; display: grid; gap: 10px; }
+.sheet .pic { width: 74%; justify-self: center; }
+.sheet h2 { margin: 0; font-size: 18px; line-height: 1.25; }
+.sheet h2 span { display: block; font-size: 13px; font-weight: 500; color: var(--muted); }
+.btn { border: 0; border-radius: 12px; padding: 12px 16px; font-weight: 600; background: var(--green); color: #fff; }
+.btn:disabled { opacity: .6; cursor: default; }
+.btn.ghost { background: var(--surface-2); color: var(--fg); border: 1px solid var(--line); }
+.push { position: absolute; top: 44px; left: 10px; right: 10px; z-index: 6; background: color-mix(in srgb, var(--surface) 94%, transparent); backdrop-filter: blur(12px); border: 1px solid var(--line); border-radius: 18px; padding: 10px 12px; display: grid; grid-template-columns: 34px 1fr; gap: 10px; align-items: center; box-shadow: 0 12px 30px -12px rgba(0,0,0,.4); transform: translateY(-160%); transition: transform .35s ease; }
+.push.show { transform: translateY(0); }
+.push .ico { width: 34px; height: 34px; border-radius: 9px; background: var(--green); display: grid; place-items: center; }
+.push .ico svg { width: 20px; height: 20px; }
+.push b { font-size: 13px; display: block; }
+.push span { font-size: 13px; color: var(--muted); }
+
+/* ---------- Admin ---------- */
+.admin { display: grid; gap: 18px; min-width: 0; }
+.admin-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
+.admin-head h2 { font-family: var(--display); font-weight: 700; font-size: 20px; margin: 0; }
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 18px; padding: 20px; display: grid; gap: 14px; min-width: 0; }
+.card h3 { margin: 0; font-size: 16px; }
+form { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 12px; }
+.f { display: grid; gap: 5px; grid-column: span 3; align-content: start; }
+.f.s2 { grid-column: span 2; }
+.f.s6 { grid-column: span 6; }
+.f label { font-size: 12.5px; font-weight: 600; color: var(--muted); letter-spacing: .02em; }
+.f input, .f select { border: 1px solid var(--line); background: var(--surface-2); border-radius: 10px; padding: 9px 11px; width: 100%; min-width: 0; }
+.f small { font-size: 12px; color: var(--muted); }
+.upload { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+.upload .prev { width: 64px; height: 64px; border-radius: 10px; background: var(--surface-2); border: 1px dashed var(--line); overflow: hidden; display: grid; place-items: center; font-size: 11px; color: var(--muted); text-align: center; }
+.upload .prev img { width: 100%; height: 100%; object-fit: cover; }
+.form-foot { grid-column: 1 / -1; display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+.form-foot .msg { font-size: 13px; color: var(--muted); }
+.form-foot .msg.err { color: var(--sale); }
+.tbl-wrap { overflow-x: auto; max-height: 420px; overflow-y: auto; }
+table { width: 100%; border-collapse: collapse; font-size: 14px; min-width: 560px; }
+th { text-align: left; font-size: 12px; color: var(--muted); font-weight: 600; letter-spacing: .04em; text-transform: uppercase; padding: 0 8px 8px; border-bottom: 1px solid var(--line); position: sticky; top: 0; background: var(--surface); }
+td { padding: 7px 8px; border-bottom: 1px solid var(--line); font-variant-numeric: tabular-nums; vertical-align: middle; }
+td.n { white-space: nowrap; }
+td img { width: 36px; height: 36px; border-radius: 6px; object-fit: cover; display: block; }
+.kind { font-size: 12px; font-weight: 600; padding: 2px 8px; border-radius: 99px; background: var(--green-soft); color: var(--green-2); white-space: nowrap; }
+.kind.p { background: color-mix(in srgb, var(--sale) 14%, transparent); color: var(--sale); }
+.del { border: 1px solid var(--line); background: none; border-radius: 8px; padding: 4px 10px; font-size: 13px; color: var(--sale); }
+.facts { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 12px; }
+.fact { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 14px; display: grid; gap: 4px; align-content: start; }
+.fact b { font-size: 14px; }
+.fact p { margin: 0; font-size: 13px; color: var(--muted); }
+.src { font-size: 12.5px; color: var(--muted); display: grid; gap: 4px; }
+.src a { color: var(--green-2); }
+.reset { border: 1px solid var(--line); background: var(--surface); border-radius: 10px; padding: 8px 12px; font-size: 13px; }
+
+@media (max-width: 920px) {
+  .stage { grid-template-columns: 1fr; justify-items: center; }
+  .phone { position: relative; top: 0; }
+  .admin { width: 100%; }
+  .facts { grid-template-columns: 1fr; }
+}
+@media (max-width: 520px) {
+  form { grid-template-columns: 1fr 1fr; }
+  .f, .f.s2, .f.s6 { grid-column: span 2; }
+  .f.half { grid-column: span 1; }
+  .phone { height: 770px; border-radius: 40px; padding: 8px; }
+  .screen { border-radius: 32px; }
+}
+@media (prefers-reduced-motion: reduce) { .push { transition: none; } }
+</style>
+
+</head>
+<body>
+<div class="wrap" lang="bg">
+  <header class="intro">
+    <span class="tag">Прототип · концепция за Супермаркети Лазур</span>
+    <h1>Мобилно приложение „Лазур – винаги под ръка“</h1>
+    <p>Отляво е приложението, както го вижда клиентът. Отдясно е админ панелът, от който служител качва промоции със снимка. Продуктите, цените и снимките са реални, от публикациите на Лазур във Facebook през 2026 г. Магазините и работното им време са от Google Maps.</p>
+  </header>
+
+  <div class="stage">
+    <!-- PHONE -->
+    <div class="phone" aria-label="Мобилно приложение">
+      <div class="screen">
+        <div class="status"><span id="clock">9:41</span><span>5G ▮▮▮</span></div>
+        <div class="appbar">
+          <div class="brand">
+            <span class="mark"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 3.6 20.4" stroke="#0b5a45" stroke-width="5" stroke-linecap="round" fill="none"/><path d="M12 3l8.4 17.4" stroke="#2f9e5a" stroke-width="5" stroke-linecap="round" fill="none"/><circle cx="12" cy="3.6" r="2.4" fill="#a8d3f2"/></svg></span>
+            <div class="wordmark">ЛАЗУР<small>Винаги под ръка</small></div>
+          </div>
+          <button class="bell" id="bell" aria-label="Известия"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg><span class="dot" id="bellDot" hidden></span></button>
+        </div>
+
+        <div class="push" id="push" role="status" aria-live="polite">
+          <span class="ico"><svg viewBox="0 0 24 24"><path d="M12 3 3.6 20.4" stroke="#cdee5c" stroke-width="4" stroke-linecap="round" fill="none"/><path d="M12 3l8.4 17.4" stroke="#fff" stroke-width="4" stroke-linecap="round" fill="none"/></svg></span>
+          <div><b>Супермаркети Лазур · сега</b><span id="pushText"></span></div>
+        </div>
+
+        <!-- Offers -->
+        <section class="view" id="v-promo">
+          <div class="seg" role="group" aria-label="Тип оферти">
+            <button id="segReg" aria-pressed="true">Редовно ниски цени</button>
+            <button id="segPromo" aria-pressed="false">Промоции</button>
+          </div>
+          <div class="banner" id="banner"></div>
+          <div class="chips" id="chips"></div>
+          <div class="period"><b id="periodTitle"></b><span id="periodCount"></span></div>
+          <div class="grid" id="promoGrid"></div>
+        </section>
+
+        <!-- Card -->
+        <section class="view" id="v-card" hidden>
+          <div class="loyalty">
+            <div class="row"><span class="wordmark">ЛАЗУР</span><span class="lvl">Лазур карта</span></div>
+            <div class="barcode"><svg id="barcode" viewBox="0 0 113 60" preserveAspectRatio="none" aria-label="Баркод на клиентската карта"></svg><span class="num" id="cardNum"></span></div>
+            <div class="hint">Покажи баркода на касата и вземи 1% отстъпка от сметката за ненамалените артикули</div>
+          </div>
+          <div class="stats">
+            <div class="stat"><b>1%</b><span>отстъпка от сметката за ненамалени артикули</span></div>
+            <div class="stat"><b>482</b><span>точки</span></div>
+            <div class="stat"><b>4,70 €</b><span>спестени през октомври</span></div>
+          </div>
+          <div class="panel">
+            <h3>До ваучер за 5 € остават 118 точки</h3>
+            <div class="bar"><i style="width:80%"></i></div>
+            <p class="small">1% отстъпка важи за артикулите, които не са в промоция. Точките и ваучерът са идея за развитие на програмата.</p>
+          </div>
+          <div class="panel">
+            <h3>Последни покупки</h3>
+            <div class="li"><span class="thumb"><img src="svinski-kotlet.jpg" alt=""></span><span class="t">Лазур 6 · кв. Изгрев<small>28.10 · +34 точки</small></span><b>34,20 €</b><span></span></div>
+            <div class="li"><span class="thumb"><img src="kiselo-mlyako.jpg" alt=""></span><span class="t">Лазур · ул. „Христо Ботев“<small>24.10 · +12 точки</small></span><b>12,85 €</b><span></span></div>
+          </div>
+        </section>
+
+        <!-- List -->
+        <section class="view" id="v-list" hidden>
+          <div class="panel" id="listPanel"></div>
+          <p class="small">Добавяй продукти от офертите и ги отмятай в магазина.</p>
+        </section>
+
+        <!-- Stores -->
+        <section class="view" id="v-stores" hidden>
+          <div class="panel" id="storeList"></div>
+          <p class="small">Пещера · Батак · Радилово. Статусът „Отворено“ се смята по текущия час в България.</p>
+        </section>
+
+        <!-- Profile -->
+        <section class="view" id="v-profile" hidden>
+          <div class="panel">
+            <h3>Мария Петрова</h3>
+            <p class="small">+359 88 *** **42 · любим магазин: Лазур 6, кв. Изгрев</p>
+          </div>
+          <div class="panel">
+            <h3>Известия</h3>
+            <label class="toggle" for="tg1">Нови месечни промоции <input type="checkbox" id="tg1" checked></label>
+            <label class="toggle" for="tg2">Лични оферти и ваучери <input type="checkbox" id="tg2" checked></label>
+            <label class="toggle" for="tg3">Игри и кампании („Купи месо Лазур“) <input type="checkbox" id="tg3" checked></label>
+            <label class="toggle" for="tg4">Новини от заведенията за бързо хранене <input type="checkbox" id="tg4"></label>
+          </div>
+          <div class="panel">
+            <h3>Контакти</h3>
+            <p class="small">035 063 866 · lazur.market@gmail.com</p>
+            <p class="small">Общи условия на програмата · Политика за поверителност · Изтриване на профила</p>
+          </div>
+        </section>
+
+        <nav class="tabbar" role="tablist">
+          <button role="tab" aria-selected="true" data-v="promo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.6 13.4 13.4 20.6a2 2 0 0 1-2.8 0L3 13V3h10l7.6 7.6a2 2 0 0 1 0 2.8Z"/><circle cx="7.5" cy="7.5" r="1.5"/></svg>Оферти</button>
+          <button role="tab" aria-selected="false" data-v="list"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 6h11M9 12h11M9 18h11"/><path d="m3 6 1 1 2-2M3 12l1 1 2-2M3 18l1 1 2-2"/></svg><span id="listLbl">Списък</span></button>
+          <button role="tab" aria-selected="false" data-v="card" class="card-tab"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M4 5v14M7 5v14M11 5v14M14 5v14M17 5v14M20 5v14"/></svg></span>Карта</button>
+          <button role="tab" aria-selected="false" data-v="stores"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 21s-7-6.2-7-12a7 7 0 0 1 14 0c0 5.8-7 12-7 12Z"/><circle cx="12" cy="9" r="2.5"/></svg>Магазини</button>
+          <button role="tab" aria-selected="false" data-v="profile"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>Профил</button>
+        </nav>
+
+        <div class="sheet-bg" id="sheetBg" hidden>
+          <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="sheetName">
+            <div class="pic" id="sheetPic"></div>
+            <h2 id="sheetName"></h2>
+            <div class="prices" id="sheetPrices"></div>
+            <p class="small" id="sheetInfo"></p>
+            <button class="btn" id="sheetAdd">Добави в списъка</button>
+            <button class="btn ghost" id="sheetClose">Затвори</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ADMIN -->
+    <section class="admin" aria-label="Админ панел">
+      <div class="admin-head">
+        <h2>Админ панел за служители</h2>
+        <button class="reset" id="resetBtn">Върни реалните оферти</button>
+      </div>
+
+      <div class="card">
+        <h3>Нова оферта</h3>
+        <form id="addForm" novalidate>
+          <div class="f half"><label for="fBrand">Марка</label><input id="fBrand" placeholder="напр. Наборъ" maxlength="30"></div>
+          <div class="f half"><label for="fName">Продукт</label><input id="fName" placeholder="напр. Кашкавал от краве мляко" maxlength="48"></div>
+          <div class="f s2 half"><label for="fUnit">Разфасовка</label><input id="fUnit" placeholder="400 г"></div>
+          <div class="f s2 half"><label for="fNew">Цена, €</label><input id="fNew" inputmode="decimal" placeholder="2,49"><small id="lvHint">в лв. се смята автоматично</small></div>
+          <div class="f s2"><label for="fOld">Стара цена, € (за промоция)</label><input id="fOld" inputmode="decimal" placeholder="2,99"></div>
+          <div class="f half"><label for="fCat">Категория</label><select id="fCat"></select></div>
+          <div class="f half"><label for="fKind">Тип</label><select id="fKind"><option value="promo">Месечна промоция (ноември)</option><option value="reg">Редовно ниска цена</option></select></div>
+          <div class="f s6"><label for="fPhoto">Снимка на продукта</label>
+            <div class="upload"><span class="prev" id="photoPrev">няма снимка</span><input type="file" id="fPhoto" accept="image/*"></div>
+          </div>
+          <div class="form-foot">
+            <button class="btn" type="submit">Публикувай и изпрати известие</button>
+            <span class="msg" id="formMsg" role="status"></span>
+          </div>
+        </form>
+      </div>
+
+      <div class="card">
+        <h3>Активни оферти · <span id="adminCount"></span></h3>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th></th><th>Продукт</th><th>Тип</th><th>Цена</th><th>Валидност</th><th></th></tr></thead>
+            <tbody id="adminRows"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="facts">
+        <div class="fact"><b>Какво е реално</b><p>23 продукта с цените им от постовете „Редовно ниски цени“ (9 и 19 юни 2026). Шест обекта в Пещера, Батак и Радилово. Логото, цветовете и слоганът „Винаги под ръка“ от новата визия за 35-годишнината.</p></div>
+        <div class="fact"><b>Клиентска карта</b><p>Картата на Лазур дава 1% отстъпка от сметката за ненамалените артикули. В приложението тя става дигитална, с баркод. Точките и ваучерите са идея за развитие.</p></div>
+        <div class="fact"><b>Как ще работи наистина</b><p>Офертите се пазят на сървър, а известията стигат до всички клиенти. В прототипа промените се пазят само в този браузър.</p></div>
+      </div>
+      <div class="src">
+        <span>Източници: <a href="https://www.facebook.com/supermarketslazur" target="_blank" rel="noopener">facebook.com/supermarketslazur</a> · Google Maps · <a href="https://katalog.bg/f-39460.html" target="_blank" rel="noopener">katalog.bg – „Лазур и Ко“ ЕООД</a></span>
+        <span>Снимките на продуктите са собственост на Супермаркети Лазур и съответните производители.</span>
+      </div>
+    </section>
+  </div>
+</div>
+
+<script>
+(() => {
+  const BGN = 1.95583;
+  const CATS = ["Месо", "Млечни", "Бакалия", "Консерви", "Напитки", "Дом и хигиена"];
+  // Real items and prices from Lazur's "Редовно ниски цени" posts (9 & 19 June 2026). since = "неувеличавана от".
+  const R = (id, brand, name, unit, price, lv, since, cat) => ({ id, brand, name, unit, price, lv, since, cat, img: "" + id + ".jpg", kind: "reg" });
+  const SAMPLE = [
+    R("svinski-kotlet", "Лазур", "Свински котлет", "1 кг", 3.99, 7.80, "24.01.2026", "Месо"),
+    R("kiselo-mlyako", "На хорото", "Кисело мляко 2%", "400 г", 0.39, 0.76, "03.02.2026", "Млечни"),
+    R("sirene", "Лудогорски дар", "Бяло саламурено сирене", "1 кг", 4.39, 8.59, "23.12.2023", "Млечни"),
+    R("kashkaval", "Наборъ", "Кашкавал от краве мляко", "400 г", 2.99, 5.85, "05.05.2026", "Млечни"),
+    R("maslo", "Deutsche Markenbutter", "Масло", "250 г", 1.89, 3.70, "12.05.2026", "Млечни"),
+    R("brashno", "Симид", "Брашно екстра", "1 кг", 0.51, 0.99, "26.02.2025", "Бакалия"),
+    R("oriz", "Възрожденец", "Ориз", "1 кг", 1.32, 2.58, "18.12.2025", "Бакалия"),
+    R("leshta", "Хепи Агро", "Леща", "500 г", 0.89, 1.74, "19.02.2026", "Бакалия"),
+    R("makaroni", "Габрово", "Макарони, различни видове", "400 г", 0.64, 1.25, "19.01.2025", "Бакалия"),
+    R("tsarevitsa", "Арива", "Сладка царевица", "340 г", 0.99, 1.94, "13.03.2026", "Консерви"),
+    R("pastet", "KARO", "Пастет Апетит", "300 г", 1.38, 2.70, "02.01.2025", "Консерви"),
+    R("lyutenitsa-parvomay", "ББП Първомай", "Лютеница", "580 г", 1.89, 3.70, "06.02.2022", "Консерви"),
+    R("lyutenitsa-filikon", "Филикон", "Лютеница", "600 г", 1.73, 3.38, "29.11.2025", "Консерви"),
+    R("zhalt-fasul", "Каликонс", "Жълт фасул", "680 г", 1.19, 2.33, "16.04.2026", "Консерви"),
+    R("domati", "Merysa", "Домати на кубчета", "400 г", 0.61, 1.19, "02.01.2025", "Консерви"),
+    R("byal-bob", "Luengo", "Бял боб", "570 г", 1.25, 2.45, "30.04.2026", "Консерви"),
+    R("bira-ariana", "Ариана", "Бира светла", "500 мл", 0.61, 1.19, "02.01.2026", "Напитки"),
+    R("bira-kronberg", "Kronberg", "Бира", "500 мл", 0.55, 1.08, "20.02.2026", "Напитки"),
+    R("hell", "Hell", "Енергийна напитка", "250 мл", 0.56, 1.09, "17.01.2024", "Напитки"),
+    R("sapun-dove", "Dove", "Сапун", "90 г", 1.02, 1.99, "02.01.2025", "Дом и хигиена"),
+    R("domestos", "Domestos", "Препарат", "750 мл", 2.50, 4.89, "01.06.2025", "Дом и хигиена"),
+    R("toaletna-hartiya", "Agnella", "Тоалетна хартия", "4 ролки", 0.49, 0.96, "12.11.2024", "Дом и хигиена"),
+    // Real promotion from the same post: 08.06–30.06.2026, was 2,09 € / 4,09 лв.
+    { id: "tocheni-kori", brand: "Фамилия", name: "Точени кори", unit: "400 г", price: 1.63, lv: 3.19, old: 2.09, oldLv: 4.09, period: "08.06 – 30.06.2026", cat: "Бакалия", img: "tocheni-kori.jpg", kind: "promo" }
+  ];
+  // Hours from Google Maps: [open, close] in minutes; index 0 = Sunday.
+  const H = (wk, sun) => [sun, wk, wk, wk, wk, wk, wk];
+  const m = (h, mi = 0) => h * 60 + mi;
+  const STORES = [
+    { n: "Лазур 6 · кв. Изгрев, Пещера", a: "ул. „Симон Налбант“ 70", t: "035 063 866", h: H([m(7), m(21)], [m(8), m(20)]), txt: "пон – съб 7:00 – 21:00 · нед 8:00 – 20:00", extra: "Заведение за бързо хранене, обновено на 08.09" },
+    { n: "Лазур · Център, Пещера", a: "ул. „Христо Ботев“", t: "035 063 866", h: H([m(7), m(21)], [m(8), m(20)]), txt: "пон – съб 7:00 – 21:00 · нед 8:00 – 20:00" },
+    { n: "Лазур · Център, Пещера", a: "ул. „Д-р Петър Цикалов“ 15", h: H([m(8), m(20, 45)], [m(8), m(19, 45)]), txt: "пон – съб 8:00 – 20:45 · нед 8:00 – 19:45" },
+    { n: "Лазур · бакалия, Пещера", a: "ул. „Петър Горанов“ 6", h: null, txt: "работното време не е публикувано" },
+    { n: "Лазур · Батак", a: "ул. „Антонивановци“ 155", h: H([m(7), m(20)], [m(7), m(20)]), txt: "всеки ден 7:00 – 20:00" },
+    { n: "Лазур 7 · Радилово", a: "ул. „Георги Ангелиев“ 44", t: "089 865 4018", h: null, close: m(21), txt: "затваря в 21:00" }
+  ];
+
+  const $ = (id) => document.getElementById(id);
+  const load = (k, d) => { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : d; } catch { return d; } };
+  const save = (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); return true; } catch { return false; } };
+  const eur = (n) => n.toFixed(2).replace(".", ",") + " €";
+  const lev = (n) => n.toFixed(2).replace(".", ",") + " лв.";
+  const pct = (p) => Math.round((1 - p.price / p.old) * 100);
+  const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+  const picHtml = (p) => p.img ? `<span class="pic"><img src="${esc(p.img)}" alt="${esc(p.brand + " " + p.name)}" loading="lazy"></span>` : `<span class="pic ph">${esc(p.name)}</span>`;
+
+  const VERSION = "v2";
+  let offers = load("lazur.offers." + VERSION, SAMPLE);
+  let list = load("lazur.list." + VERSION, [{ id: "svinski-kotlet", done: false }, { id: "sirene", done: false }, { id: "kiselo-mlyako", done: true }]);
+  let kind = "reg", cat = "Всички", openId = null, photoData = null;
+
+  // ---- Offers view ----
+  function renderChips() {
+    $("chips").innerHTML = ["Всички", ...CATS].map((c) => `<button aria-pressed="${c === cat}" data-c="${c}">${c}</button>`).join("");
+  }
+  function renderOffers() {
+    $("segReg").setAttribute("aria-pressed", kind === "reg");
+    $("segPromo").setAttribute("aria-pressed", kind === "promo");
+    $("banner").className = "banner" + (kind === "promo" ? " promo" : "");
+    $("banner").innerHTML = kind === "reg"
+      ? `спестявай всеки ден с нашите <b>редовно ниски цени</b><small>Артикули с трайно поддържана цена, която не е увеличавана поне 45 дни и е конкурентна в категорията си.</small>`
+      : `месечни промоции <b>в Супермаркети Лазур</b><small>Валидни във всички обекти в Пещера, Батак и Радилово.</small>`;
+    const items = offers.filter((p) => p.kind === kind && (cat === "Всички" || p.cat === cat));
+    $("periodTitle").textContent = kind === "reg" ? "Цени, на които можеш да разчиташ" : "Активни промоции";
+    $("periodCount").textContent = items.length + (items.length === 1 ? " продукт" : " продукта");
+    $("promoGrid").innerHTML = items.length ? items.map((p) => `
+      <button class="promo-card" data-id="${esc(p.id)}">
+        ${picHtml(p)}${p.old ? `<span class="off">−${pct(p)}%</span>` : ""}
+        <span class="pname">${esc(p.name)}<span>${esc(p.brand)} · ${esc(p.unit)}</span></span>
+        <span class="prices"><span class="price">${eur(p.price)}</span><span class="lv">${lev(p.lv)}</span>${p.old ? `<span class="old">${eur(p.old)}</span>` : ""}</span>
+        ${p.kind === "reg" ? `<span class="since">неувеличавана от ${p.since}</span>` : `<span class="since p">${esc(p.period)}</span>`}
+      </button>`).join("") : `<p class="empty" style="grid-column:1/-1">Няма оферти в тази категория. Добави от админ панела.</p>`;
+  }
+
+  // ---- Shopping list ----
+  function renderList() {
+    list = list.filter((l) => offers.some((p) => p.id === l.id));
+    const rows = list.map((l) => ({ ...l, p: offers.find((p) => p.id === l.id) }));
+    $("listLbl").textContent = rows.length ? `Списък (${rows.length})` : "Списък";
+    if (!rows.length) { $("listPanel").innerHTML = `<h3>Списък за пазаруване</h3><p class="empty">Списъкът е празен. Отвори продукт и натисни „Добави в списъка“.</p>`; return; }
+    const total = rows.reduce((s, r) => s + r.p.price, 0);
+    // Card: 1% off the bill for items that are not on promotion.
+    const card = rows.reduce((s, r) => s + (r.p.old ? 0 : r.p.price * 0.01), 0);
+    const saved = rows.reduce((s, r) => s + (r.p.old ? r.p.old - r.p.price : 0), 0) + card;
+    $("listPanel").innerHTML = `<h3>Списък за пазаруване</h3>` + rows.map((r) => `
+      <div class="li"><span class="thumb">${r.p.img ? `<img src="${esc(r.p.img)}" alt="">` : ""}</span>
+        <label class="t" style="${r.done ? "text-decoration:line-through;opacity:.6" : ""}"><input type="checkbox" data-done="${esc(r.id)}" ${r.done ? "checked" : ""} style="margin-right:6px">${esc(r.p.name)}<small>${esc(r.p.brand)} · ${esc(r.p.unit)}</small></label>
+        <b>${eur(r.p.price)}</b><button class="x" data-rm="${esc(r.id)}" aria-label="Премахни">✕</button></div>`).join("") +
+      `<div class="total"><span>Общо ${eur(total - card)} · ${lev((total - card) * BGN)}</span>${saved > 0 ? `<span class="save">Спестяваш ${eur(saved)}</span>` : ""}</div>` +
+      `<p class="small">С Лазур карта: −${eur(card)} (1% от ненамалените артикули)</p>`;
+  }
+
+  // ---- Stores (status from current time in Bulgaria) ----
+  function nowSofia() {
+    try {
+      const parts = new Intl.DateTimeFormat("en-GB", { timeZone: "Europe/Sofia", weekday: "short", hour: "2-digit", minute: "2-digit", hour12: false }).formatToParts(new Date());
+      const g = (t) => parts.find((p) => p.type === t).value;
+      const day = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"].indexOf(g("weekday"));
+      return { day, min: (+g("hour") % 24) * 60 + +g("minute"), label: g("hour") + ":" + g("minute") };
+    } catch { const d = new Date(); return { day: d.getDay(), min: d.getHours() * 60 + d.getMinutes(), label: d.toTimeString().slice(0, 5) }; }
+  }
+  function renderStores() {
+    const n = nowSofia();
+    $("clock").textContent = n.label.replace(/^0/, "");
+    $("storeList").innerHTML = `<h3>Нашите магазини</h3>` + STORES.map((s) => {
+      let pill = `<span class="pill unk">Провери</span>`;
+      if (s.h) {
+        const [o, c] = s.h[n.day]; const open = n.min >= o && n.min < c;
+        pill = `<span class="pill ${open ? "open" : "closed"}">${open ? "Отворено" : "Затворено"}</span>`;
+      }
+      return `<div class="store"><b>${esc(s.n)}</b>${pill}<span>${esc(s.a)}</span><span>${esc(s.txt)}${s.t ? " · " + esc(s.t) : ""}</span>${s.extra ? `<em>${esc(s.extra)}</em>` : ""}</div>`;
+    }).join("");
+  }
+
+  // ---- Barcode (EAN-13) ----
+  function ean13(base12) {
+    const d = base12.split("").map(Number);
+    const sum = d.reduce((s, v, i) => s + v * (i % 2 ? 3 : 1), 0);
+    const code = base12 + ((10 - (sum % 10)) % 10);
+    const L = ["0001101","0011001","0010011","0111101","0100011","0110001","0101111","0111011","0110111","0001011"];
+    const G = ["0100111","0110011","0011011","0100001","0011101","0111001","0000101","0010001","0001001","0010111"];
+    const Rr = ["1110010","1100110","1101100","1000010","1011100","1001110","1010000","1000100","1001000","1110100"];
+    const PAR = ["LLLLLL","LLGLGG","LLGGLG","LLGGGL","LGLLGG","LGGLLG","LGGGLL","LGLGLG","LGLGGL","LGGLGL"];
+    const c = code.split("").map(Number), par = PAR[c[0]];
+    let bits = "101";
+    for (let i = 1; i <= 6; i++) bits += (par[i - 1] === "L" ? L : G)[c[i]];
+    bits += "01010";
+    for (let i = 7; i <= 12; i++) bits += Rr[c[i]];
+    bits += "101";
+    let rects = "";
+    for (let i = 0; i < bits.length; i++) if (bits[i] === "1") rects += `<rect x="${i + 9}" y="0" width="1.02" height="60" fill="#111"/>`;
+    $("barcode").innerHTML = `<rect width="113" height="60" fill="#fff"/>` + rects;
+    $("cardNum").textContent = code.replace(/^(\d)(\d{6})(\d{6})$/, "$1 $2 $3");
+  }
+  ean13("290035063866");
+
+  // ---- Tabs ----
+  const views = ["promo", "list", "card", "stores", "profile"];
+  document.querySelector(".tabbar").addEventListener("click", (e) => {
+    const b = e.target.closest("button[data-v]"); if (!b) return;
+    views.forEach((v) => $("v-" + v).hidden = v !== b.dataset.v);
+    document.querySelectorAll(".tabbar button").forEach((x) => x.setAttribute("aria-selected", x === b));
+    if (b.dataset.v === "stores") renderStores();
+  });
+  const showTab = (v) => document.querySelector(`.tabbar button[data-v="${v}"]`).click();
+  $("segReg").onclick = () => { kind = "reg"; renderOffers(); };
+  $("segPromo").onclick = () => { kind = "promo"; renderOffers(); };
+  $("chips").addEventListener("click", (e) => { const b = e.target.closest("button"); if (!b) return; cat = b.dataset.c; renderChips(); renderOffers(); });
+
+  // ---- Detail sheet ----
+  $("promoGrid").addEventListener("click", (e) => {
+    const b = e.target.closest(".promo-card"); if (!b) return;
+    const p = offers.find((x) => x.id === b.dataset.id); openId = p.id;
+    $("sheetPic").outerHTML = picHtml(p).replace('class="pic', 'id="sheetPic" class="pic');
+    $("sheetName").innerHTML = `${esc(p.name)}, ${esc(p.unit)}<span>${esc(p.brand)}</span>`;
+    $("sheetPrices").innerHTML = `<span class="price" style="font-size:20px">${eur(p.price)}</span><span class="lv">${lev(p.lv)}</span>${p.old ? `<span class="old">${eur(p.old)} / ${lev(p.oldLv)}</span>` : ""}`;
+    $("sheetInfo").textContent = p.kind === "reg"
+      ? `Редовно ниска цена. Цената не е увеличавана от ${p.since}. Наличен във всички Супермаркети Лазур.`
+      : `Промоция −${pct(p)}%, валидна ${p.period}. Спестяваш ${eur(p.old - p.price)}.`;
+    const inList = list.some((l) => l.id === p.id);
+    $("sheetAdd").textContent = inList ? "Вече е в списъка" : "Добави в списъка";
+    $("sheetAdd").disabled = inList;
+    $("sheetBg").hidden = false;
+  });
+  $("sheetClose").onclick = () => $("sheetBg").hidden = true;
+  $("sheetBg").addEventListener("click", (e) => { if (e.target === $("sheetBg")) $("sheetBg").hidden = true; });
+  $("sheetAdd").onclick = () => {
+    list.push({ id: openId, done: false }); save("lazur.list." + VERSION, list); renderList();
+    $("sheetAdd").textContent = "Добавено"; $("sheetAdd").disabled = true;
+  };
+  $("listPanel").addEventListener("click", (e) => {
+    const rm = e.target.closest("[data-rm]");
+    if (rm) { list = list.filter((l) => l.id !== rm.dataset.rm); save("lazur.list." + VERSION, list); renderList(); }
+  });
+  $("listPanel").addEventListener("change", (e) => {
+    const d = e.target.dataset.done; if (!d) return;
+    list.find((l) => l.id === d).done = e.target.checked; save("lazur.list." + VERSION, list); renderList();
+  });
+
+  // ---- Push ----
+  let pushTimer;
+  function push(text) {
+    $("pushText").textContent = text; $("push").classList.add("show"); $("bellDot").hidden = false;
+    clearTimeout(pushTimer); pushTimer = setTimeout(() => $("push").classList.remove("show"), 4500);
+  }
+  $("bell").onclick = () => { $("bellDot").hidden = true; push("Прясно свинско месо от собствената ни транжорна в Пещера, всеки ден."); };
+
+  // ---- Admin ----
+  const num = (v) => parseFloat(String(v).replace(",", ".").trim());
+  $("fCat").innerHTML = CATS.map((c) => `<option>${c}</option>`).join("");
+  $("fNew").addEventListener("input", () => { const v = num($("fNew").value); $("lvHint").textContent = v > 0 ? "= " + lev(v * BGN) : "в лв. се смята автоматично"; });
+  $("fPhoto").addEventListener("change", () => {
+    const f = $("fPhoto").files[0]; if (!f) return;
+    const img = new Image(), url = URL.createObjectURL(f);
+    img.onload = () => {
+      const s = 360, cv = document.createElement("canvas"); cv.width = cv.height = s;
+      const k = Math.max(s / img.width, s / img.height), w = img.width * k, h = img.height * k;
+      cv.getContext("2d").drawImage(img, (s - w) / 2, (s - h) / 2, w, h);
+      photoData = cv.toDataURL("image/jpeg", 0.8); URL.revokeObjectURL(url);
+      $("photoPrev").innerHTML = `<img src="${photoData}" alt="Преглед">`;
+    };
+    img.src = url;
+  });
+  $("addForm").addEventListener("submit", (e) => {
+    e.preventDefault();
+    const name = $("fName").value.trim(), brand = $("fBrand").value.trim() || "Лазур", unit = $("fUnit").value.trim() || "1 бр.";
+    const price = num($("fNew").value), old = num($("fOld").value), k = $("fKind").value, msg = $("formMsg");
+    msg.className = "msg err";
+    if (!name) { msg.textContent = "Въведи име на продукта."; $("fName").focus(); return; }
+    if (!(price > 0)) { msg.textContent = "Въведи цена в евро, напр. 2,49."; $("fNew").focus(); return; }
+    if (k === "promo" && !(old > price)) { msg.textContent = "За промоция въведи стара цена, по-висока от новата."; $("fOld").focus(); return; }
+    const p = { id: "u" + Date.now(), brand, name, unit, price, lv: +(price * BGN).toFixed(2), cat: $("fCat").value, img: photoData, kind: k };
+    if (k === "promo") { p.old = old; p.oldLv = +(old * BGN).toFixed(2); p.period = "01.11 – 30.11.2026"; } else { p.since = "30.10.2026"; }
+    offers.unshift(p);
+    const stored = save("lazur.offers." + VERSION, offers);
+    kind = k; cat = "Всички"; renderAll(); showTab("promo"); $("v-promo").scrollTop = 0;
+    push(k === "promo" ? `Нова промоция: ${brand} ${name} за ${eur(price)} (−${pct(p)}%)` : `Нова редовно ниска цена: ${name} за ${eur(price)}`);
+    msg.className = "msg";
+    msg.textContent = stored ? "Публикувано. Известието е изпратено до клиентите." : "Публикувано, но няма да се запази след презареждане (снимката е твърде голяма за браузъра).";
+    $("addForm").reset(); photoData = null; $("photoPrev").textContent = "няма снимка"; $("lvHint").textContent = "в лв. се смята автоматично";
+  });
+  $("adminRows").addEventListener("click", (e) => {
+    const b = e.target.closest("[data-del]"); if (!b) return;
+    offers = offers.filter((p) => p.id !== b.dataset.del); save("lazur.offers." + VERSION, offers); renderAll();
+  });
+  $("resetBtn").onclick = () => { offers = SAMPLE.slice(); list = []; save("lazur.offers." + VERSION, offers); save("lazur.list." + VERSION, list); renderAll(); };
+  function renderAdmin() {
+    $("adminCount").textContent = offers.length;
+    $("adminRows").innerHTML = offers.map((p) => `<tr>
+      <td>${p.img ? `<img src="${esc(p.img)}" alt="">` : ""}</td>
+      <td>${esc(p.brand)} ${esc(p.name)} <span style="color:var(--muted)">${esc(p.unit)}</span></td>
+      <td><span class="kind ${p.kind === "promo" ? "p" : ""}">${p.kind === "promo" ? "Промоция" : "Редовно ниска"}</span></td>
+      <td class="n">${eur(p.price)}${p.old ? ` <span class="old">${eur(p.old)}</span>` : ""}</td>
+      <td class="n">${p.kind === "promo" ? esc(p.period) : "от " + p.since}</td>
+      <td><button class="del" data-del="${esc(p.id)}">Свали</button></td></tr>`).join("");
+  }
+
+  function renderAll() { renderChips(); renderOffers(); renderList(); renderStores(); renderAdmin(); }
+  renderAll();
+  setInterval(renderStores, 60000);
+})();
+</script>
+
+</body>
+</html>
